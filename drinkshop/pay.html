@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>確認訂購</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #281e4f;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    .container {
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    .cart-summary {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .cart-summary ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .cart-summary ul li {
+      margin-bottom: 10px;
+    }
+    .total {
+      font-weight: bold;
+    }
+    .checkout-btn {
+      background-color: #ff6f61;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .checkout-btn:hover {
+      background-color: #ff4f3a;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>確認訂購</h1>
+  </header>
+
+  <div class="container">
+    <div class="cart-summary">
+      <h2>購物車</h2>
+      <ul id="cartSummary">
+        <!-- 結帳內容會顯示在這裡 -->
+      </ul>
+      <p class="total">總金額: NT$ <span id="checkoutTotal">0</span></p>
+      <button class="checkout-btn" onclick="finalizeCheckout()">確認</button>
+    </div>
+  </div>
+
+  <script>
+    // 讀取 URL 中的參數並顯示購物車資料
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function displayCart() {
+      const cartData = JSON.parse(decodeURIComponent(getQueryParam('cartData')));
+      const totalAmount = getQueryParam('total');
+
+      const cartSummaryElement = document.getElementById('cartSummary');
+      cartData.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.drink} - NT$ ${item.price}`;
+        cartSummaryElement.appendChild(li);
+      });
+
+      document.getElementById('checkoutTotal').textContent = totalAmount;
+    }
+
+    // 確認結帳
+    function finalizeCheckout() {
+      alert("訂購成功，請至櫃台結帳！");
+      // 此處可以進行更多處理，如顯示訂單號、發送電子郵件等
+    }
+
+    // 顯示購物車內容
+    displayCart();
+  </script>
+
+</body>
+</html>

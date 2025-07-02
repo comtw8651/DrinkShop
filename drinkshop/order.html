@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>飲料店線上點</title>
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  display: flex;                    /* 启用 Flexbox 布局 */
+  justify-content: center;          /* 水平方向上居中 */
+  margin: 0;
+  padding: 0;
+}
+header {
+  background-color: #0e1a63;  /* 保持原來的顏色 */
+  color: rgb(254, 252, 252);  /* 保持原來的文字顏色 */
+  padding: 10px 20px;
+  display: flex;  /* 使用 flex 排版 */
+  align-items: center;  /* 垂直居中 */
+  justify-content: flex-start;  /* 預設對齊左邊 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+header img {
+  width: 50px;  /* 控制 LOGO 寬度 */
+  height: auto;  /* 保持圖片比例 */
+  margin-right: 15px;  /* LOGO 與文字之間的間距 */
+}
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.container {
+  margin-top: 90px;
+  display: flex;               /* 启用 Flexbox 布局 */
+  justify-content: center;         /* 水平方向上居中对齐 */
+  gap: 20px;                   /* 设置元素间的间距 */
+  width: 80%;                 /* 容器占满全宽 */
+  flex-wrap: wrap;             /* 在空间不足时换行 */
+  box-sizing: border-box;     /* 包括边框和内边距在内的宽高计算 */
+}
+
+.container > div {
+  flex: 1 1 30%;               /* 设置每个子元素的宽度可以自动调整，基础宽度为 30% */
+  min-width: 80px;            /* 保证每个子元素至少占据200px宽 */
+  box-sizing: border-box;     /* 包括边框和内边距在内的宽高计算 */
+}
+
+.cart {
+  width: 80px; /* 控制購物車寬度 */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu {
+  width: 40%; /* 減少菜單的寬度 */
+  background-color: #f9f9f9;
+  padding: 30px;
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.menu ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.menu ul li {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu h2, .cart h2 {
+  text-align: center;
+}
+
+.category {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.category h3 {
+      margin-top: 0;
+}
+
+.drink-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  width: 100%; /* 使每列顯示兩個項目 */
+  margin-bottom: 20px;
+}
+
+.drink-item img {
+  max-width: 80px; /* 圖片縮小 */
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.drink-item span {
+  text-align: center;
+  font-weight: bold;
+}
+
+.drink-item label {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.drink-item select {
+  margin-top: 5px;
+}
+
+.drink-item button {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.drink-item button:hover {
+  background-color: #ff4f3a;
+}
+
+.cart ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.cart ul li {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart .total {
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #e9ecef;
+  width: 100%;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart button {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.cart button:hover {
+  background-color: #ff4f3a;
+}
+.cart ul li button {
+  background-color: #ff4d4d; /* 移除按鈕的背景顏色 */
+  color: white; /* 文字顏色 */
+  padding: 5px 10px; /* 內邊距 */
+  font-size: 14px; /* 字型大小 */
+  cursor: pointer; /* 鼠標變為指針狀 */
+  border-radius: 4px; /* 圓角 */
+  margin-left: 10px; /* 與文字的間距 */
+  width: auto; /* 按鈕寬度自適應 */
+  transition: background-color 0.3s ease; /* 背景顏色過渡效果 */
+}
+
+/* 當鼠標懸停在移除按鈕上時改變背景顏色 */
+.cart ul li button:hover {
+  background-color: #e60000; /* 懸停時的顏色 */
+}
+
+/* 當按鈕被點擊時顯示深紅色 */
+.cart ul li button:active {
+  background-color: #b30000; /* 按下去時顯示更深的顏色 */
+}
+
+.total {
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .drink-item {
+    width: 100%; /* 在小螢幕上顯示為單列 */
+  }
+  
+  .category {
+    justify-content: center; /* 讓分類顯示更居中 */
+  }
+  
+  .drink-item img {
+    max-width: 100px; /* 增大圖片 */
+  }
+  
+  .menu, .cart {
+    width: 100%; /* 使卡片式排版在小螢幕上也適應 */
+  }
+}
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="img/logo.png" alt="LOGO">
+    <h1>線上點餐</h1>
+  </header>
+
+  <div class="container">
+    <div class="menu">
+        <h2>線上菜單</h2>
+
+      <div class="category">
+        <h3>紅茶類</h3>
+        <div class="drink-item">
+          <img src="img/1.jpeg" alt="紅茶" class="drink-image"> <!-- 圖片 -->
+          <span>紅茶 - 30$</span>
+          <label for="sugar-level-0">甜度：</label>
+          <select id="sugar-level-0">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-0">冰塊：</label>
+          <select id="ice-level-0">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-0">副料：</label>
+          <select id="topping-level-0">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('紅茶', 30, 'sugar-level-0', 'ice-level-0', 'topping-level-0')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/2.jpeg" alt="奶茶" class="drink-image">
+          <span>奶茶 - 50$</span>
+          <label for="sugar-level-1">甜度：</label>
+          <select id="sugar-level-1">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-1">冰塊：</label>
+          <select id="ice-level-1">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-1">副料：</label>
+          <select id="topping-level-1">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('奶茶', 50, 'sugar-level-1', 'ice-level-1', 'topping-level-1')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/3.jpeg" alt="紅茶鮮奶" class="drink-image">
+          <span>紅茶鮮奶 - 60$</span>
+          <label for="sugar-level-2">甜度：</label>
+          <select id="sugar-level-2">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-2">冰塊：</label>
+          <select id="ice-level-2">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-2">副料：</label>
+          <select id="topping-level-2">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('紅茶鮮奶', 60, 'sugar-level-2', 'ice-level-2', 'topping-level-2')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/4.jpeg" alt="檸檬紅茶" class="drink-image">
+          <span>檸檬紅茶 - 50$</span>
+          <label for="sugar-level-3">甜度：</label>
+          <select id="sugar-level-3">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-3">冰塊：</label>
+          <select id="ice-level-3">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-3">副料：</label>
+          <select id="topping-level-3">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('檸檬紅茶', 50, 'sugar-level-3', 'ice-level-3', 'topping-level-3')">訂購</button>
+        </div>
+      </div>
+
+      <div class="category">
+        <h3>綠茶類</h3>
+
+          <div class="drink-item">
+            <img src="img/5.jpeg" alt="綠茶" class="drink-image">
+            <span>綠茶 - 30$</span>
+            <label for="sugar-level-4">甜度：</label>
+            <select id="sugar-level-4">
+              <option value="全糖">全糖</option>
+              <option value="半糖">半糖</option>
+              <option value="微糖">少糖</option>
+              <option value="無糖">無糖</option>
+            </select>
+            <label for="ice-level-4">冰塊：</label>
+            <select id="ice-level-4">
+              <option value="正常冰">正常冰</option>
+              <option value="微冰">少冰</option>
+              <option value="去冰">去冰</option>
+            </select>
+            <label for="topping-level-4">副料：</label>
+            <select id="topping-level-4">
+              <option value="無">無</option>
+              <option value="珍珠">珍珠</option>
+              <option value="波霸">波霸</option>
+            </select>
+            <button onclick="addToCart('綠茶', 30, 'sugar-level-4', 'ice-level-4', 'topping-level-4')">訂購</button>
+          </div>
+        
+        <div class="drink-item">
+          <img src="img/6.jpeg" alt="奶綠" class="drink-image">
+          <span>奶綠 - 50$</span>
+          <label for="sugar-level-5">甜度：</label>
+          <select id="sugar-level-5">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-5">冰塊：</label>
+          <select id="ice-level-5">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-5">副料：</label>
+          <select id="topping-level-5">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('奶綠', 50, 'sugar-level-5', 'ice-level-5', 'topping-level-5')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/7.jpeg" alt="綠茶鮮奶" class="drink-image">
+          <span>綠茶鮮奶 - 60$</span>
+          <label for="sugar-level-6">甜度：</label>
+          <select id="sugar-level-6">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-6">冰塊：</label>
+          <select id="ice-level-6">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-6">副料：</label>
+          <select id="topping-level-6">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('綠茶鮮奶', 60, 'sugar-level-6', 'ice-level-6', 'topping-level-6')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/8.jpg" alt="多多綠茶" class="drink-image">
+          <span>多多綠茶 - 50$</span>
+          <label for="sugar-level-7">甜度：</label>
+          <select id="sugar-level-7">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-7">冰塊：</label>
+          <select id="ice-level-7">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-7">副料：</label>
+          <select id="topping-level-7">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('多多綠茶', 50, 'sugar-level-7', 'ice-level-7', 'topping-level-7')">訂購</button>
+        </div>
+      </div>
+
+      <div class="category">
+        <h3>烏龍茶類</h3>
+
+          <div class="drink-item">
+            <img src="img/9.jpg" alt="烏龍茶" class="drink-image">
+            <span> 烏龍茶 - 30$</span>
+            <label for="sugar-level-8">甜度：</label>
+            <select id="sugar-level-8">
+              <option value="全糖">全糖</option>
+              <option value="半糖">半糖</option>
+              <option value="微糖">少糖</option>
+              <option value="無糖">無糖</option>
+            </select>
+            <label for="ice-level-8">冰塊：</label>
+            <select id="ice-level-8">
+              <option value="正常冰">正常冰</option>
+              <option value="微冰">少冰</option>
+              <option value="去冰">去冰</option>
+            </select>
+            <label for="topping-level-8">副料：</label>
+            <select id="topping-level-8">
+              <option value="無">無</option>
+              <option value="珍珠">珍珠</option>
+              <option value="波霸">波霸</option>
+            </select>
+            <button onclick="addToCart('烏龍茶', 30, 'sugar-level-8', 'ice-level-8', 'topping-level-8')">訂購</button>
+          </div>
+        
+        <div class="drink-item">
+          <img src="img/10.jpg" alt="烏龍奶" class="drink-image">
+          <span>烏龍奶 - 50$</span>
+          <label for="sugar-level-9">甜度：</label>
+          <select id="sugar-level-9">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-9">冰塊：</label>
+          <select id="ice-level-9">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-9">副料：</label>
+          <select id="topping-level-9">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('烏龍奶', 50, 'sugar-level-9', 'ice-level-9', 'topping-level-9')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/11.jpg" alt="烏龍鮮奶" class="drink-image">
+          <span>烏龍鮮奶 - 60$</span>
+          <label for="sugar-level-10">甜度：</label>
+          <select id="sugar-level-10">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-10">冰塊：</label>
+          <select id="ice-level-10">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-10">副料：</label>
+          <select id="topping-level-10">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('烏龍鮮奶', 60, 'sugar-level-10', 'ice-level-10', 'topping-level-10')">訂購</button>
+        </div>
+
+        <div class="drink-item">
+          <img src="img/12.jpg" alt="蜜桃烏龍" class="drink-image">
+          <span>蜜桃烏龍 - 50$</span>
+          <label for="sugar-level-11">甜度：</label>
+          <select id="sugar-level-11">
+            <option value="全糖">全糖</option>
+            <option value="半糖">半糖</option>
+            <option value="微糖">少糖</option>
+            <option value="無糖">無糖</option>
+          </select>
+          <label for="ice-level-11">冰塊：</label>
+          <select id="ice-level-11">
+            <option value="正常冰">正常冰</option>
+            <option value="微冰">少冰</option>
+            <option value="去冰">去冰</option>
+          </select>
+          <label for="topping-level-11">副料：</label>
+          <select id="topping-level-11">
+            <option value="無">無</option>
+            <option value="珍珠">珍珠</option>
+            <option value="波霸">波霸</option>
+          </select>
+          <button onclick="addToCart('蜜桃烏龍', 50, 'sugar-level-11', 'ice-level-11', 'topping-level-11')">訂購</button>
+        </div>
+      </div>
+
+      </div>
+
+
+      <div class="cart">
+        <h2>購物車</h2>
+        <ul id="cartItems">
+            <!-- 購物車項目會在這裡顯示 -->
+        </ul>
+        <p class="total">總金額: NT$ <span id="totalAmount">0</span></p>
+        <button onclick="goToCheckout()">結帳</button>
+    </div>
+    
+    <script>
+      // 初始化購物車和總金額
+      let cart = [];
+      let totalAmount = 0;
+    
+      // 副料的價格設定
+      const toppingPrices = {
+        "珍珠": 10,
+        "波霸": 10,
+        "無": 0
+      };
+    
+      // 修改加入購物車的函數，根據副料選項增加價格
+      function addToCart(drink, price, sugarId, iceId, toppingId) {
+        // 根據選擇的 ID 獲取實際的選項文字
+        const sugar = document.getElementById(sugarId).options[document.getElementById(sugarId).selectedIndex].text;
+        const ice = document.getElementById(iceId).options[document.getElementById(iceId).selectedIndex].text;
+        const topping = document.getElementById(toppingId).options[document.getElementById(toppingId).selectedIndex].text;
+    
+        // 計算副料價格
+        const toppingPrice = toppingPrices[topping] || 0;
+    
+        // 計算總價
+        const totalPrice = price + toppingPrice;
+    
+        // 將飲料信息加入購物車
+        cart.push({ drink, price: totalPrice, sugar, ice, topping });
+        totalAmount += totalPrice;  // 更新總金額
+        updateCart();
+      }
+    
+      // 更新購物車顯示
+      function updateCart() {
+        const cartItemsElement = document.getElementById("cartItems");
+        cartItemsElement.innerHTML = '';  // 清空購物車
+    
+        // 顯示購物車內的項目
+        cart.forEach((item, index) => {
+          const li = document.createElement('li');
+          li.textContent = `${item.drink} - NT$ ${item.price} | 甜度: ${item.sugar} | 冰塊: ${item.ice} | 副料: ${item.topping}`;
+    
+          // 創建移除按鈕
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = '移除';
+          removeBtn.onclick = function() {
+            removeItem(index);
+          };
+    
+          // 將移除按鈕添加到購物車項目
+          li.appendChild(removeBtn);
+          cartItemsElement.appendChild(li);
+        });
+    
+        // 更新總金額
+        document.getElementById("totalAmount").textContent = totalAmount;
+      }
+    
+      // 移除購物車項目
+      function removeItem(index) {
+        const itemToRemove = cart[index];
+        totalAmount -= itemToRemove.price;  // 更新總金額
+    
+        // 從購物車中移除該商品
+        cart.splice(index, 1);
+    
+        // 重新更新購物車顯示
+        updateCart();
+      }
+    
+      // 跳轉到結帳頁面的函數
+      function goToCheckout() {
+        if (cart.length === 0) {
+          alert("購物車是空的，請先加入商品！");
+        } else {
+          // 將購物車資料轉換為 JSON 字符串並 URL 編碼
+          const encodedCartData = encodeURIComponent(JSON.stringify(cart));
+    
+          // 構建跳轉鏈接，將購物車資料和總金額作為參數傳遞
+          const checkoutLink = `pay.html?cartData=${encodedCartData}&total=${totalAmount}`;
+    
+          // 跳轉到結帳頁面
+          window.location.href = checkoutLink;
+        }
+      }
+    </script>
+
+</body>
+</html>
